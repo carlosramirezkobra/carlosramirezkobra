@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!-- Política de Referrer para evitar el Error 153 de YouTube -->
+  <meta name="referrer" content="strict-origin-when-cross-origin" />
+  <title>Cine & Videopoesía — Carlos Ramírez (Kobra)</title>
+  <style>
+    /* Reset & Base Styles */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      width: 100%;
+      min-height: 100vh;
+      background-color: #050505;
+      color: #e0e0e0;
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      overflow-x: hidden;
+    }
+
+    /* Fixed Top Navigation Bar */
+    .navbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.2rem 3.5rem;
+      background: rgba(0, 0, 0, 0.9);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      z-index: 100;
+    }
+
+    .navbar .logo {
+      font-size: 0.95rem;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      font-weight: 500;
+      color: #ffffff;
+      text-decoration: none;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 1.8rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      color: #aaaaaa;
+      text-decoration: none;
+      font-size: 0.8rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      transition: color 0.3s ease;
+    }
+
+    .nav-links a:hover,
+    .nav-links a.active {
+      color: #ffffff;
+    }
+
+    /* Hamburger Menu Button */
+    .hamburger-btn {
+      display: none;
+      background: none;
+      border: none;
+      color: #ffffff;
+      font-size: 1.8rem;
+      cursor: pointer;
+      outline: none;
+    }
+
+    /* HERO FEATURED STREAMING PLAYER */
+    .hero-streaming {
+      position: relative;
+      width: 100%;
+      height: 85vh;
+      min-height: 550px;
+      margin-top: 60px;
+      background: #000;
+      overflow: hidden;
+    }
+
+    .hero-video-wrapper {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+    }
+
+    .hero-video-wrapper iframe {
+      width: 100vw;
+      height: 56.25vw;
+      min-height: 100vh;
+      min-width: 177.77vh;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      opacity: 0.45;
+      filter: contrast(110%) brightness(85%);
+      border: none;
+    }
+
+    .hero-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(0deg, #050505 5%, rgba(5,5,5,0.4) 50%, rgba(5,5,5,0.8) 100%),
+                  linear-gradient(90deg, #050505 0%, rgba(5,5,5,0.6) 40%, transparent 100%);
+      z-index: 2;
+    }
+
+    .hero-info {
+      position: absolute;
+      bottom: 4rem;
+      left: 4rem;
+      z-index: 3;
+      max-width: 550px;
+    }
+
+    .hero-tag {
+      font-size: 0.75rem;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: #e50914;
+      font-weight: 700;
+      margin-bottom: 0.8rem;
+      display: block;
+    }
+
+    .hero-title {
+      font-size: 3rem;
+      font-weight: 300;
+      letter-spacing: 3px;
+      color: #ffffff;
+      text-transform: uppercase;
+      margin-bottom: 1rem;
+      line-height: 1.1;
+    }
+
+    .hero-desc {
+      font-size: 0.95rem;
+      line-height: 1.7;
+      color: #cccccc;
+      margin-bottom: 1.8rem;
+      font-weight: 300;
+    }
+
+    .btn-play {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+      padding: 0.8rem 2rem;
+      background: #ffffff;
+      color: #000000;
+      border: none;
+      font-size: 0.85rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      border-radius: 3px;
+      transition: background 0.3s ease;
+    }
+
+    .btn-play:hover {
+      background: #cccccc;
+    }
+
+    /* Top 3 Featured Selector Cards */
+    .featured-selector {
+      position: absolute;
+      bottom: 3.5rem;
+      right: 4rem;
+      z-index: 3;
+      display: flex;
+      gap: 1.2rem;
+    }
+
+    .selector-card {
+      width: 160px;
+      height: 95px;
+      border-radius: 6px;
+      overflow: hidden;
+      border: 2px solid rgba(255, 255, 255, 0.2);
+      cursor: pointer;
+      position: relative;
+      transition: all 0.3s ease;
+      background: #111;
+    }
+
+    .selector-card img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0.6;
+      transition: opacity 0.3s ease;
+    }
+
+    .selector-card.active {
+      border-color: #ffffff;
+      transform: scale(1.05);
+      box-shadow: 0 0 15px rgba(255,255,255,0.3);
+    }
+
+    .selector-card.active img,
+    .selector-card:hover img {
+      opacity: 1;
+    }
+
+    .selector-card .card-label {
+      position: absolute;
+      bottom: 0.4rem;
+      left: 0.5rem;
+      font-size: 0.65rem;
+      letter-spacing: 1px;
+      color: #fff;
+      text-shadow: 0 1px 3px #000;
+      text-transform: uppercase;
+    }
+
+    /* CATALOG CONTAINER & ROWS */
+    .catalog-container {
+      padding: 2rem 4rem 6rem;
+      display: flex;
+      flex-direction: column;
+      gap: 3.5rem;
+    }
+
+    .category-row {
+      display: flex;
+      flex-direction: column;
+      gap: 1.2rem;
+    }
+
+    .row-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-left: 3px solid #ffffff;
+      padding-left: 0.8rem;
+    }
+
+    .row-title {
+      font-size: 1.3rem;
+      font-weight: 300;
+      letter-spacing: 2px;
+      color: #ffffff;
+      text-transform: uppercase;
+    }
+
+    .row-controls {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .ctrl-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      border: 1px solid rgba(255,255,255,0.2);
+      background: rgba(15,15,15,0.8);
+      color: #fff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .ctrl-btn:hover {
+      background: #ffffff;
+      color: #000000;
+    }
+
+    .row-slider {
+      display: flex;
+      gap: 1.2rem;
+      overflow-x: auto;
+      scroll-behavior: smooth;
+      padding: 0.5rem 0 1rem;
+    }
+
+    .row-slider::-webkit-scrollbar {
+      display: none;
+    }
+
+    .video-item {
+      flex: 0 0 280px;
+      background: rgba(20, 20, 20, 0.8);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 6px;
+      overflow: hidden;
+      transition: transform 0.3s ease, border-color 0.3s ease;
+      cursor: pointer;
+    }
+
+    .video-item:hover {
+      transform: translateY(-6px);
+      border-color: rgba(255, 255, 255, 0.3);
+    }
+
+    .video-thumb {
+      width: 100%;
+      height: 158px;
+      position: relative;
+      background: #111;
+      overflow: hidden;
+    }
+
+    .video-thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: grayscale(30%);
+      transition: filter 0.3s ease;
+    }
+
+    .video-item:hover .video-thumb img {
+      filter: grayscale(0%);
+    }
+
+    .play-overlay-icon {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 42px;
+      height: 42px;
+      background: rgba(0,0,0,0.7);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 1rem;
+      opacity: 0.8;
+      transition: opacity 0.3s ease, transform 0.3s ease;
+    }
+
+    .video-item:hover .play-overlay-icon {
+      opacity: 1;
+      transform: translate(-50%, -50%) scale(1.1);
+      background: #ffffff;
+      color: #000;
+    }
+
+    .video-meta-info {
+      padding: 1rem;
+    }
+
+    .video-meta-info h4 {
+      font-size: 0.95rem;
+      font-weight: 400;
+      color: #ffffff;
+      margin-bottom: 0.4rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .video-meta-info p {
+      font-size: 0.8rem;
+      color: #888888;
+      line-height: 1.4;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    /* MODAL LIGHTBOX PLAYER CON BOTÓN DE CIERRE MEJORADO */
+    .modal-player {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.92);
+      backdrop-filter: blur(15px);
+      z-index: 300;
+      display: none;
+      justify-content: center;
+      align-items: center;
+      padding: 2rem;
+    }
+
+    .modal-player.active {
+      display: flex;
+    }
+
+    .modal-container {
+      position: relative;
+      width: 100%;
+      max-width: 950px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+    }
+
+    .btn-close-modal {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      color: #ffffff;
+      font-size: 1.2rem;
+      font-weight: 300;
+      padding: 0.4rem 1.2rem;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-bottom: 0.8rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: all 0.3s ease;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    .btn-close-modal:hover {
+      background: #ffffff;
+      color: #000000;
+      border-color: #ffffff;
+    }
+
+    .modal-content {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16/9;
+      background: #000;
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+    }
+
+    .modal-content iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+
+    /* Footer */
+    footer {
+      text-align: center;
+      padding: 2.5rem;
+      font-size: 0.85rem;
+      color: #666666;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+      background: #000000;
+    }
+
+    /* Responsive */
+    @media (max-width: 992px) {
+      .navbar { padding: 1.2rem 1.8rem; }
+      .hamburger-btn { display: block; }
+
+      .nav-links {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        width: 100%;
+        background: rgba(5, 5, 5, 0.96);
+        backdrop-filter: blur(15px);
+        flex-direction: column;
+        align-items: center;
+        gap: 1.5rem;
+        padding: 2rem 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        display: none;
+      }
+
+      .nav-links.mobile-active { display: flex; }
+
+      .hero-info {
+        left: 1.5rem;
+        bottom: 2rem;
+        right: 1.5rem;
+        max-width: 100%;
+      }
+
+      .hero-title { font-size: 2rem; }
+      .featured-selector { display: none; }
+      .catalog-container { padding: 2rem 1.5rem 4rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Navigation Bar -->
+  <nav class="navbar">
+    <a href="index.html#hero" class="logo">Carlos Ramírez (Kobra)</a>
+    <button class="hamburger-btn" id="hamburgerBtn" aria-label="Menú">☰</button>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="index.html#hero">Inicio</a></li>
+      <li><a href="index.html#semblanza">Semblanza</a></li>
+      <li><a href="index.html#proyectos">Proyectos</a></li>
+      <li><a href="cine.html" class="active">Cine & Videopoesía</a></li>
+      <li><a href="index.html#laboratorios">Laboratorios</a></li>
+      <li><a href="index.html#contacto">Contacto</a></li>
+    </ul>
+  </nav>
+
+  <!-- HERO FEATURED STREAMING PLAYER -->
+  <header class="hero-streaming">
+    <div class="hero-video-wrapper">
+      <iframe id="heroFrame" src="https://youtu.be/Eit7sJHu9F8?si=m2u2J3fhjcBPZfpF" allow="autoplay; encrypted-media" frameborder="0"></iframe>
+    </div>
+    <div class="hero-overlay"></div>
+    
+    <div class="hero-info">
+      <span class="hero-tag" id="heroTag">Videopoesía Destacada</span>
+      <h1 class="hero-title" id="heroTitle">Cargando...</h1>
+      <p class="hero-desc" id="heroDesc">
+        Descripción de la pieza videopoética destacada.
+      </p>
+      <button class="btn-play" id="heroPlayBtn" data-ytid="">▶ Reproducir Pieza Completa</button>
+    </div>
+
+    <!-- Pestañas Selectoras -->
+    <div class="featured-selector">
+      <div class="selector-card active" onclick="switchHero(0)">
+        <img id="thumb-0" src="" alt="Destacado 1">
+        <span class="card-label">01. Videopoesía I</span>
+      </div>
+      <div class="selector-card" onclick="switchHero(1)">
+        <img id="thumb-1" src="" alt="Destacado 2">
+        <span class="card-label">02. Livecoding</span>
+      </div>
+      <div class="selector-card" onclick="switchHero(2)">
+        <img id="thumb-2" src="" alt="Destacado 3">
+        <span class="card-label">03. Cyber_bardX</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- CATÁLOGO DE CATEGORÍAS -->
+  <main class="catalog-container">
+
+    <!-- FILA 1: VIDEOPOESÍA -->
+    <section class="category-row">
+      <div class="row-header">
+        <h2 class="row-title">Videopoesía</h2>
+        <div class="row-controls">
+          <button class="ctrl-btn" onclick="scrollRow('slider-videopoesia', -300)">‹</button>
+          <button class="ctrl-btn" onclick="scrollRow('slider-videopoesia', 300)">›</button>
+        </div>
+      </div>
+      <div class="row-slider" id="slider-videopoesia">
+        
+        <article class="video-item" id="videopoesia-1" onclick="openModal('dQw4w9WgXcQ')">
+          <div class="video-thumb">
+            <iframe width="560" height="315" src="https://www.youtube.com/embed/Eit7sJHu9F8?si=m2u2J3fhjcBPZfpF" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+            <img src="https://img.youtube.com/vi/dQw4w9WgXcQ/hqdefault.jpg" alt="Videopoesía 1">
+            <div class="play-overlay-icon">▶</div>
+          </div>
+          <div class="video-meta-info">
+            <h4>Pieza Videopoética I</h4>
+            <p>Exploración textual y síntesis de voz en entornos digitales.</p>
+          </div>
+        </article>
+
+        <article class="video-item" id="videopoesia-2" onclick="openModal('dQw4w9WgXcQ')">
+          <div class="video-thumb">
+            <img src="https://img.youtube.com/vi/dQw4w9WgXcQ/hqdefault.jpg" alt="Videopoesía 2">
+            <div class="play-overlay-icon">▶</div>
+          </div>
+          <div class="video-meta-info">
+            <h4>Pieza Videopoética II</h4>
+            <p>Ensamblaje audiovisual sobre la velocidad y el archivo efímero.</p>
+          </div>
+        </article>
+
+      </div>
+    </section>
+
+    <!-- FILA 2: PRESENTACIONES / PERFORMANCE -->
+    <section class="category-row">
+      <div class="row-header">
+        <h2 class="row-title">Presentaciones / Performance</h2>
+        <div class="row-controls">
+          <button class="ctrl-btn" onclick="scrollRow('slider-performance', -300)">‹</button>
+          <button class="ctrl-btn" onclick="scrollRow('slider-performance', 300)">›</button>
+        </div>
+      </div>
+      <div class="row-slider" id="slider-performance">
+        
+        <article class="video-item" id="performance-1" onclick="openModal('dQw4w9WgXcQ')">
+          <div class="video-thumb">
+            <img src="https://img.youtube.com/vi/dQw4w9WgXcQ/hqdefault.jpg" alt="Performance 1">
+            <div class="play-overlay-icon">▶</div>
+          </div>
+          <div class="video-meta-info">
+            <h4>Acción Sonora & Poética</h4>
+            <p>Registro en vivo de lectura expandida e interacción de medios.</p>
+          </div>
+        </article>
+
+      </div>
+    </section>
+
+    <!-- FILA 3: SONORA -->
+    <section class="category-row">
+      <div class="row-header">
+        <h2 class="row-title">Sonora (Álbumes & Audio)</h2>
+        <div class="row-controls">
+          <button class="ctrl-btn" onclick="scrollRow('slider-sonora', -300)">‹</button>
+          <button class="ctrl-btn" onclick="scrollRow('slider-sonora', 300)">›</button>
+        </div>
+      </div>
+      <div class="row-slider" id="slider-sonora">
+        
+        <article class="video-item" id="sonora-1" onclick="openModal('dQw4w9WgXcQ')">
+          <div class="video-thumb">
+            <img src="https://img.youtube.com/vi/dQw4w9WgXcQ/hqdefault.jpg" alt="Own Dream Code">
+            <div class="play-overlay-icon">▶</div>
+          </div>
+          <div class="video-meta-info">
+            <h4>Own Dream Code</h4>
+            <p>Álbum de paisajes sonoros y literatura programada.</p>
+          </div>
+        </article>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- MODAL LIGHTBOX PLAYER CON BOTÓN CERRAR -->
+  <div class="modal-player" id="modalPlayer" onclick="closeModalOnBackdrop(event)">
+    <div class="modal-container">
+      <button class="btn-close-modal" onclick="closeModal()">✕ Cerrar reproductor</button>
+      <div class="modal-content">
+        <iframe id="modalFrame" src="" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <p>&copy; Carlos Ramírez (Kobra). Alojado en GitHub Pages.</p>
+  </footer>
+
+  <script>
+    /* 1. Menú Hamburguesa Móvil */
+    const hamburgerBtn = document.getElementById('hamburgerBtn');
+    const navLinks = document.getElementById('navLinks');
+
+    hamburgerBtn.addEventListener('click', () => {
+      navLinks.classList.toggle('mobile-active');
+    });
+
+    /* Obtener origen dinámico para evitar Error 153 */
+    const currentOrigin = window.location.origin && window.location.origin !== 'null' 
+      ? window.location.origin 
+      : 'https://www.youtube.com';
+
+    /* 2. Datos de los 3 Videos Destacados */
+    /* SUSTITUYE 'dQw4w9WgXcQ' POR LOS IDs REALES DE TUS VIDEOS DE YOUTUBE */
+    const heroData = [
+      {
+        ytid: 'dQw4w9WgXcQ',
+        tag: 'Videopoesía Destacada',
+        title: 'Pieza Videopoética I',
+        desc: 'Exploración de la palabra, el espacio digital y las sintaxis electrónicas. Un recorrido poético visual y sonoro.'
+      },
+      {
+        ytid: 'dQw4w9WgXcQ',
+        tag: 'Livecoding Stream',
+        title: 'Algoritmos Sonoros en Vivo',
+        desc: 'Generación de estructuras poético-musicales utilizando código ejecutable en tiempo real.'
+      },
+      {
+        ytid: 'dQw4w9WgXcQ',
+        tag: 'Proyecto Serie',
+        title: 'Cyber_bardX — Cap. 01',
+        desc: 'Serie transmedia que explora los límites entre el bardo contemporáneo y las arquitecturas de red.'
+      }
+    ];
+
+    // Carga de miniaturas en selectores
+    heroData.forEach((item, i) => {
+      const el = document.getElementById(`thumb-${i}`);
+      if (el) el.src = `https://img.youtube.com/vi/${item.ytid}/hqdefault.jpg`;
+    });
+
+    function switchHero(index) {
+      const data = heroData[index];
+      const cards = document.querySelectorAll('.selector-card');
+      
+      cards.forEach((c, i) => c.classList.toggle('active', i === index));
+      
+      document.getElementById('heroTag').textContent = data.tag;
+      document.getElementById('heroTitle').textContent = data.title;
+      document.getElementById('heroDesc').textContent = data.desc;
+      document.getElementById('heroPlayBtn').setAttribute('data-ytid', data.ytid);
+      
+      // Iframe de fondo dinámico con parámetros antirestricción
+      const embedUrl = `https://www.youtube-nocookie.com/embed/${data.ytid}?autoplay=1&mute=1&controls=0&loop=1&playlist=${data.ytid}&enablejsapi=1&origin=${encodeURIComponent(currentOrigin)}`;
+      document.getElementById('heroFrame').src = embedUrl;
+    }
+
+    // Inicializar primer destacado
+    switchHero(0);
+
+    document.getElementById('heroPlayBtn').addEventListener('click', function() {
+      const ytid = this.getAttribute('data-ytid');
+      openModal(ytid);
+    });
+
+    /* 3. Desplazamiento horizontal de filas */
+    function scrollRow(sliderId, distance) {
+      const slider = document.getElementById(sliderId);
+      slider.scrollBy({ left: distance, behavior: 'smooth' });
+    }
+
+    /* 4. Modal Lightbox de Reproducción */
+    const modalPlayer = document.getElementById('modalPlayer');
+    const modalFrame = document.getElementById('modalFrame');
+
+    function openModal(ytid) {
+      const modalUrl = `https://www.youtube-nocookie.com/embed/${ytid}?autoplay=1&rel=0&enablejsapi=1&origin=${encodeURIComponent(currentOrigin)}`;
+      modalFrame.src = modalUrl;
+      modalPlayer.classList.add('active');
+    }
+
+    function closeModal() {
+      modalPlayer.classList.remove('active');
+      modalFrame.src = '';
+    }
+
+    // Cerrar al dar clic fuera de la ventana del video
+    function closeModalOnBackdrop(event) {
+      if (event.target === modalPlayer) {
+        closeModal();
+      }
+    }
+
+    // Cerrar con la tecla ESC
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeModal();
+    });
+  </script>
+</body>
+</html>
