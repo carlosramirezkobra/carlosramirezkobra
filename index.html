@@ -4,6 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Carlos Ramírez Kobra — Portafolio Artístico</title>
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
   <style>
     /* Reset & Base Styles */
     * {
@@ -271,9 +273,27 @@
     }
 
     /* ========================================================
-       Sección Destacado (Hito / Participación Especial)
+       Sección Destacado (Carrusel Fade In / Out)
        ======================================================== */
+    .featured-slider-container {
+      position: relative;
+      width: 100%;
+    }
+
+    .featured-slides-wrapper {
+      position: relative;
+      width: 100%;
+      min-height: 420px;
+    }
+
     .featured-card {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.8s ease-in-out, visibility 0.8s ease-in-out;
       display: grid;
       grid-template-columns: 1.1fr 1fr;
       gap: 3.5rem;
@@ -284,6 +304,14 @@
       border: 1px solid rgba(255, 255, 255, 0.15);
       border-radius: 6px;
       padding: 3rem;
+      pointer-events: none;
+    }
+
+    .featured-card.active {
+      position: relative;
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
     }
 
     .featured-img-block {
@@ -294,6 +322,9 @@
       border: 1px solid rgba(255, 255, 255, 0.1);
       position: relative;
       background: rgba(5, 5, 5, 0.8);
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
 
     .featured-img-block img {
@@ -307,6 +338,11 @@
     .featured-card:hover .featured-img-block img {
       filter: grayscale(20%) contrast(100%);
       transform: scale(1.02);
+    }
+
+    .featured-img-placeholder {
+      font-size: 3.5rem;
+      color: rgba(255, 255, 255, 0.2);
     }
 
     .featured-tag {
@@ -337,8 +373,38 @@
       margin-bottom: 1.5rem;
     }
 
+    /* Bullets Inferiores del Carrusel Destacado */
+    .featured-controls {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 1rem;
+      margin-top: 2rem;
+    }
+
+    .featured-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: transparent;
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .featured-dot:hover {
+      border-color: #ffffff;
+      transform: scale(1.2);
+    }
+
+    .featured-dot.active {
+      background: #ffffff;
+      border-color: #ffffff;
+      box-shadow: 0 0 8px rgba(255, 255, 255, 0.6);
+    }
+
     /* ========================================================
-       Acordeón / Cortinilla Lateral (Estilo Video de Referencia)
+       Acordeón / Cortinilla Lateral
        ======================================================== */
     .accordion-slider {
       display: flex;
@@ -349,21 +415,21 @@
     }
 
     .slide-panel {
-  flex: 0.8;
-  position: relative;
-  background: rgba(15, 15, 15, 0.75);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 6px;
-  cursor: pointer;
-  overflow: hidden;
-  transition: flex 0.6s cubic-bezier(0.25, 1, 0.5, 1), background-color 0.4s ease, border-color 0.4s ease;
-  display: flex;
-  justify-content: center;
-  align-items: flex-end;
-  padding-bottom: 2.5rem;
-}
+      flex: 0.8;
+      position: relative;
+      background: rgba(15, 15, 15, 0.75);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 6px;
+      cursor: pointer;
+      overflow: hidden;
+      transition: flex 0.6s cubic-bezier(0.25, 1, 0.5, 1), background-color 0.4s ease, border-color 0.4s ease;
+      display: flex;
+      justify-content: center;
+      align-items: flex-end;
+      padding-bottom: 2.5rem;
+    }
 
     .slide-panel:hover {
       border-color: rgba(255, 255, 255, 0.3);
@@ -379,34 +445,34 @@
 
     /* Pestaña Vertical Rotada (Estado Comprimido) */
     .slide-label {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 1rem;
-  opacity: 1;
-  transition: opacity 0.3s ease;
-  writing-mode: vertical-rl;
-  transform: rotate(180deg); /* Orienta la lectura de abajo hacia arriba */
-  white-space: nowrap;
-  max-height: 80%;
-  pointer-events: none;
-}
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1rem;
+      opacity: 1;
+      transition: opacity 0.3s ease;
+      writing-mode: vertical-rl;
+      transform: rotate(180deg);
+      white-space: nowrap;
+      max-height: 80%;
+      pointer-events: none;
+    }
 
-   .slide-number {
-  font-size: 1rem;
-  font-weight: 600;
-  color: #888888;
-  letter-spacing: 2px;
-}
+    .slide-number {
+      font-size: 1rem;
+      font-weight: 600;
+      color: #888888;
+      letter-spacing: 2px;
+    }
 
-.slide-title-vert {
-  font-size: 0.85rem;
-  text-transform: uppercase;
-  letter-spacing: 3px;
-  color: #ffffff;
-  font-weight: 300;
-}
+    .slide-title-vert {
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 3px;
+      color: #ffffff;
+      font-weight: 300;
+    }
 
     .slide-panel.active .slide-label {
       opacity: 0;
@@ -606,6 +672,12 @@
       transition: color 0.3s ease, transform 0.2s ease;
     }
 
+    .social-list a i {
+      font-size: 1.2rem;
+      width: 24px;
+      text-align: center;
+    }
+
     .social-list a:hover {
       color: #ffffff;
       transform: translateX(5px);
@@ -787,22 +859,69 @@
     </div>
   </section>
 
-  <!-- Sección Destacado (Sin presencia en el menú) -->
+  <!-- Sección Destacado (Carrusel de 3 noticias con Fade In/Out) -->
   <section id="destacado">
     <div class="container">
-      <div class="featured-card">
-        <div class="featured-img-block">
-          <!-- Puedes reemplazar la ruta con la imagen de la participación en Argentina -->
-          <img src="img/posverso_bienal.jpg" alt="POSVERSO Bienal Argentina" onerror="this.style.display='none'; this.parentNode.style.background='rgba(30,30,30,0.8)';">
+      <div class="featured-slider-container">
+        
+        <div class="featured-slides-wrapper">
+          
+          <!-- Noticia 1 -->
+          <div class="featured-card active">
+            <div class="featured-img-block">
+              <img src="img/posverso_bienal.jpg" alt="POSVERSO Bienal Argentina" onerror="this.style.display='none'; this.parentNode.style.background='rgba(30,30,30,0.8)';">
+            </div>
+            <div class="featured-info">
+              <span class="featured-tag">Participación Internacional</span>
+              <h3>POSVERSO — Bienal de Poesía Experimental</h3>
+              <p>
+                Exposición y presentación de obra en la Bienal Internacional POSVERSO en Argentina, explorando las derivas de la poesía electrónica, la interacción textual y la materialidad del código en las artes contemporáneas.
+              </p>
+              <a href="#" target="_blank" class="btn-more">Conocer más de la pieza</a>
+            </div>
+          </div>
+
+          <!-- Noticia 2 -->
+          <div class="featured-card">
+            <div class="featured-img-block">
+              <img src="img/symbolic_homes_pres.jpg" alt="Presentación Symbolic Homes" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+              <i class="fa-solid fa-laptop-code featured-img-placeholder" style="display:none;"></i>
+            </div>
+            <div class="featured-info">
+              <span class="featured-tag">Presentación Online</span>
+              <h3>Symbolic Homes — Transmisión en Vivo</h3>
+              <p>
+                Presentación online de Symbolic Homes vía transmisión remota. Contará con la participación activa de lxs autorxs y las intervenciones especiales de Martín Rangel, Vinicius Marquet e Iván Vergara como presentadorxs.
+              </p>
+              <a href="#" target="_blank" class="btn-more">Unirse al Evento</a>
+            </div>
+          </div>
+
+          <!-- Noticia 3 -->
+          <div class="featured-card">
+            <div class="featured-img-block">
+              <img src="img/noticia_ejemplo.jpg" alt="Noticia de Ejemplo" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+              <i class="fa-regular fa-newspaper featured-img-placeholder" style="display:none;"></i>
+            </div>
+            <div class="featured-info">
+              <span class="featured-tag">Novedad</span>
+              <h3>Noticia / Lanzamiento de Ejemplo</h3>
+              <p>
+                Este espacio está reservado para próximas noticias, publicaciones destacadas o nuevos lanzamientos del proyecto. Puedes actualizar este contenido en cualquier momento.
+              </p>
+              <a href="#" class="btn-more">Más Información</a>
+            </div>
+          </div>
+
         </div>
-        <div class="featured-info">
-          <span class="featured-tag">Participación Internacional</span>
-          <h3>POSVERSO — Bienal de Poesía Experimental</h3>
-          <p>
-            Exposición y presentación de obra en la Bienal Internacional POSVERSO en Argentina, explorando las derivas de la poesía electrónica, la interacción textual y la materialidad del código en las artes contemporáneas.
-          </p>
-          <a href="#" target="_blank" class="btn-more">Conocer más de la pieza</a>
+
+        <!-- Bullets de navegación del carrusel -->
+        <div class="featured-controls">
+          <div class="featured-dot active" data-slide="0"></div>
+          <div class="featured-dot" data-slide="1"></div>
+          <div class="featured-dot" data-slide="2"></div>
         </div>
+
       </div>
     </div>
   </section>
@@ -816,13 +935,13 @@
         <!-- Panel 01 -->
         <div class="slide-panel active">
           <div class="slide-label">
-            <!--<span class="slide-number">01</span>-->
             <span class="slide-title-vert">Symbolic Homes</span>
           </div>
           <div class="slide-content">
-            <span class="panel-num">PROYECTO 01</span>
+            <span class="panel-num"><img src="img/SymbolicHomes.png" width="50%" /></span>
+            <span class="panel-num">LITERATURA ELECTRÓNICA</span>
             <h3>Symbolic Homes</h3>
-            <p>Exploración poética e interactiva sobre la habitabilidad digital, el espacio simbólico y la memoria en entornos de red.</p>
+            <p>Videojuego con narrativa hypertextual. Una exploración poética e interactiva sobre la habitabilidad digital, el espacio simbólico y la memoria en entornos de red.</p>
             <div><a href="assets/symbolics-homes.html" class="btn-more">Ver Proyecto</a></div>
           </div>
         </div>
@@ -833,9 +952,10 @@
             <span class="slide-title-vert">Homotransmedialis</span>
           </div>
           <div class="slide-content">
-            <span class="panel-num">PROYECTO 02</span>
+            <span class="panel-num"><img src="img/HomoTransmedialis.png" width="50%" /></span>
+            <span class="panel-num">INVESTIGACIÓN</span>
             <h3>Homotransmedialis</h3>
-            <p>Serie transmedia interactiva desarrollada en múltiples entregas que explora la hibridación entre tecnología, narrativa y cuerpo.</p>
+            <p>Ivestigación en torno a la interrogante ¿cómo leemos actualmente? En multiples entregas publicadas por el Centro de Cultura Digital.</p>
             <div><a href="#" class="btn-more">Ver Proyecto</a></div>
           </div>
         </div>
@@ -843,12 +963,12 @@
         <!-- Panel 03 -->
         <div class="slide-panel">
           <div class="slide-label">
-            <span class="slide-title-vert">Proyecto III</span>
+            <span class="slide-title-vert">PUBLICACIONES</span>
           </div>
           <div class="slide-content">
-            <span class="panel-num">PROYECTO 03</span>
-            <h3>Proyecto / Obra III</h3>
-            <p>Descripción y archivo conceptual del proyecto en desarrollo.</p>
+            <span class="panel-num">POESÍA TRANSMEDIA</span>
+            <h3>PUBLICACIONES</h3>
+            <p>Carlos Ramírez Kobra ha publicado diferentes plaquettes, poemarios, epub transmedia que puedes consultar, comprar y en su caso, descargar versiones electrónicas.</p>
             <div><a href="#" class="btn-more">Ver Proyecto</a></div>
           </div>
         </div>
@@ -856,12 +976,13 @@
         <!-- Panel 04 -->
         <div class="slide-panel">
           <div class="slide-label">
-            <span class="slide-title-vert">Proyecto IV</span>
+            <span class="slide-title-vert">DIOS UN PIXEL</span>
           </div>
           <div class="slide-content">
-            <span class="panel-num">PROYECTO 04</span>
-            <h3>Proyecto / Obra IV</h3>
-            <p>Descripción y archivo conceptual del proyecto en desarrollo.</p>
+            <span class="panel-num"><img src="img/DiosUnPixel.png" width="50%" /></span>
+            <span class="panel-num">LITERATURA TRANSMEDIA</span>
+            <h3>dios un pixel</h3>
+            <p>«dios un pixel» dios un pixel es un poemario transmedia y la inmersión en un algoritmo, simultáneamente. Poesía con navegación hipertextual, ambientes audiovisuales, experiencias sonoras, elementos interactivos y animaciones en torno a la vida digital.</p>
             <div><a href="#" class="btn-more">Ver Proyecto</a></div>
           </div>
         </div>
@@ -869,12 +990,12 @@
         <!-- Panel 05 -->
         <div class="slide-panel">
           <div class="slide-label">
-            <span class="slide-title-vert">Proyecto V</span>
+            <span class="slide-title-vert">Cyber_bardX</span>
           </div>
           <div class="slide-content">
-            <span class="panel-num">PROYECTO 05</span>
-            <h3>Proyecto / Obra V</h3>
-            <p>Descripción y archivo conceptual del proyecto en desarrollo.</p>
+            <span class="panel-num">LITERATURA ELECTRÓNICA</span>
+            <h3>Cyber_bardX</h3>
+            <p>Basado en el .</p>
             <div><a href="#" class="btn-more">Ver Proyecto</a></div>
           </div>
         </div>
@@ -882,12 +1003,12 @@
         <!-- Panel 06 -->
         <div class="slide-panel">
           <div class="slide-label">
-            <span class="slide-title-vert">Proyecto VI</span>
+            <span class="slide-title-vert">SONORA</span>
           </div>
           <div class="slide-content">
-            <span class="panel-num">PROYECTO 06</span>
-            <h3>Proyecto / Obra VI</h3>
-            <p>Descripción y archivo conceptual del proyecto en desarrollo.</p>
+            <span class="panel-num">POESÍA SONORA Y HIP HOP</span>
+            <h3>Experiencias sonara</h3>
+            <p>RedDark albúm de experimentación sonora publicado en 2025, Somos Magia, Albún de poetry hop publicado en 2024 y Own Dream Code, albúm con diferentes experiencias sonoras y poéticas publicado en 2020.</p>
             <div><a href="#" class="btn-more">Ver Proyecto</a></div>
           </div>
         </div>
@@ -895,12 +1016,12 @@
         <!-- Panel 07 -->
         <div class="slide-panel">
           <div class="slide-label">
-            <span class="slide-title-vert">Proyecto VII</span>
+            <span class="slide-title-vert">Colaboraciones</span>
           </div>
           <div class="slide-content">
-            <span class="panel-num">PROYECTO 07</span>
-            <h3>Proyecto / Obra VII</h3>
-            <p>Descripción y archivo conceptual del proyecto en desarrollo.</p>
+            <span class="panel-num">LITERATURA TRANSMEDIA</span>
+            <h3>ANTOLOGÍAS</h3>
+            <p>Participación como colaborador en la Antología LitElat Vol 2, como autor en la Antologíade Poesía Visual SIGNO/Territorio, en POSVERSO Bienal 2026, entre otros proyectos</p>
             <div><a href="#" class="btn-more">Ver Proyecto</a></div>
           </div>
         </div>
@@ -919,26 +1040,26 @@
             <iframe width="100%" height="auto" src="https://www.youtube.com/embed/Eit7sJHu9F8?si=hd652MRcCwePDihl" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
           </div>
           <div class="video-info">
-            <h4>Pieza Videopoética I</h4>
-            <p>Exploración de imagen en movimiento y texto dinámico.</p>
+            <h4>Flor de cristal</h4>
+            <p>con imágenes de la Huasteca Hidalguense, pieza fue seleccionada por Frame to Frames : Your Eyes Follow II, Ekphrastic Poetry Film Prize, Festival de cine FOTOGENIA, Ciudad de México, 2023</p>
           </div>
         </div>
         <div class="video-card">
           <div class="video-wrapper">
-            <iframe src="https://www.youtube.com/watch?v=dQIeL4uGh0o" title="Videopoesía II" allowfullscreen></iframe>
+            <iframe width="100%" height="auto" src="https://www.youtube.com/embed/dQIeL4uGh0o?si=gQLTJcynoeprp6Hr" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
           </div>
           <div class="video-info">
-            <h4>Pieza Videopoética II</h4>
-            <p>Montaje audiovisual y experimentación sonora.</p>
+            <h4>Bug [dios un pixel]</h4>
+            <p>Bug, videopoema parte del poemario transmedia #diosunpixel publicado por el Centro de Cultura Digital.</p>
           </div>
         </div>
         <div class="video-card">
           <div class="video-wrapper">
-            <iframe src="https://www.youtube.com/watch?v=Q7R077y5MoY" title="Videopoesía III" allowfullscreen></iframe>
+            <iframe width="100%" height="auto" src="https://www.youtube.com/embed/Q7R077y5MoY?si=2ID37xXTz-fUu9GP" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
           </div>
           <div class="video-info">
-            <h4>Pieza Videopoética III</h4>
-            <p>Deriva estética sobre el espacio digital.</p>
+            <h4>Black lodge</h4>
+            <p>Basado en el universo cinematográfico de David Lynch. selección oficial del V Maldito Festival de Videopoesía y del 3er Coloquio de Poesía Iberoamericana Elsa Cross.</p>
           </div>
         </div>
       </div>
@@ -998,21 +1119,21 @@
           <div>
             <h3 style="font-size: 1.2rem; color: #fff; margin-bottom: 1rem; text-transform: uppercase; letter-spacing: 1px;">Enlaces Directos</h3>
             <ul class="social-list">
-              <li><a href="https://linktr.ee/kobrakonk" target="_blank">↗ Linktree Oficial</a></li>
+              <li><a href="https://linktr.ee/kobrakonk" target="_blank"><i class="fa-solid fa-arrow-up-right-from-square"></i> Linktree Oficial</a></li>
             </ul>
           </div>
           <div>
             <h3 style="font-size: 1rem; color: #aaa; margin-bottom: 0.8rem; text-transform: uppercase; letter-spacing: 1px;">Redes Sociales</h3>
             <ul class="social-list">
-              <li><a href="https://instagram.com" target="_blank">Instagram</a></li>
-              <li><a href="https://facebook.com" target="_blank">Facebook</a></li>
-              <li><a href="https://youtube.com" target="_blank">YouTube</a></li>
-              <li><a href="https://tiktok.com" target="_blank">TikTok</a></li>
+              <li><a href="https://instagram.com" target="_blank"><i class="fa-brands fa-instagram"></i> Instagram</a></li>
+              <li><a href="https://facebook.com" target="_blank"><i class="fa-brands fa-facebook"></i> Facebook</a></li>
+              <li><a href="https://youtube.com" target="_blank"><i class="fa-brands fa-youtube"></i> YouTube</a></li>
+              <li><a href="https://tiktok.com" target="_blank"><i class="fa-brands fa-tiktok"></i> TikTok</a></li>
             </ul>
           </div>
           <div style="border-top: 1px solid rgba(255,255,255,0.1); padding-top: 1rem;">
             <ul class="social-list">
-              <li><a href="https://github.com/carlosramirezkobra" target="_blank"> GitHub Repositorios</a></li>
+              <li><a href="https://github.com/carlosramirezkobra" target="_blank"><i class="fa-brands fa-github"></i> GitHub Repositorios</a></li>
             </ul>
           </div>
         </div>
@@ -1046,6 +1167,22 @@
       panel.addEventListener('click', () => {
         slidePanels.forEach(p => p.classList.remove('active'));
         panel.classList.add('active');
+      });
+    });
+
+    /* 2.1 Slider Sección Destacado (Fade In / Fade Out con Bullets) */
+    const featuredCards = document.querySelectorAll('.featured-card');
+    const featuredDots = document.querySelectorAll('.featured-dot');
+
+    featuredDots.forEach(dot => {
+      dot.addEventListener('click', () => {
+        const slideIndex = parseInt(dot.getAttribute('data-slide'));
+
+        featuredCards.forEach(card => card.classList.remove('active'));
+        featuredDots.forEach(d => d.classList.remove('active'));
+
+        featuredCards[slideIndex].classList.add('active');
+        dot.classList.add('active');
       });
     });
 
