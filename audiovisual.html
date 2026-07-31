@@ -736,7 +736,7 @@
     const modalFrame = document.getElementById('modalFrame');
 
     function openModal(ytid) {
-      const modalUrl = `https://www.youtube-nocookie.com/embed/${ytid}?autoplay=1&rel=0&enablejsapi=1&origin=${encodeURIComponent(currentOrigin)}`;
+      const modalUrl = `https://www.youtube-nocookie.com/embed/${ytid}?autoplay=1&rel=0&start=50&enablejsapi=1&origin=${encodeURIComponent(currentOrigin)}`;
       modalFrame.src = modalUrl;
       modalPlayer.classList.add('active');
     }
