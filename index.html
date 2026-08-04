@@ -403,6 +403,11 @@
       box-shadow: 0 0 8px rgba(255, 255, 255, 0.6);
     }
 
+    .more-news-btn-container {
+      text-align: center;
+      margin-top: 2rem;
+    }
+
     /* ========================================================
        Acordeón / Cortinilla Lateral
        ======================================================== */
@@ -733,12 +738,23 @@
     @media (max-width: 992px) {
       .bio-split, .contact-split, .featured-card { 
         grid-template-columns: 1fr; 
-        gap: 2.5rem; 
+        gap: 2rem; 
       }
-      .featured-card { padding: 1.8rem; }
-      .featured-img-block { height: 280px; }
+      .featured-card { 
+        padding: 1.5rem; 
+        max-width: 100%;
+      }
+      .featured-slides-wrapper {
+        min-height: auto;
+      }
+      .featured-img-block { height: 240px; }
 
-      .container { width: 90%; }
+      .featured-tag {
+        display: inline-block;
+        width: fit-content;
+      }
+
+      .container { width: 92%; }
       h1 { font-size: 2.5rem; }
       .navbar { padding: 1.2rem 1.8rem; }
       
@@ -765,31 +781,97 @@
 
       .bullet-nav { right: 0.8rem; }
 
+      /* Ajustes para la sección Proyectos en Móvil */
       .accordion-slider {
         flex-direction: column;
         height: auto;
+        gap: 0.8rem;
       }
 
       .slide-panel {
-        min-height: 70px;
-        flex: 1 !important;
+        min-height: 60px;
+        height: auto;
+        flex: 1 1 auto !important;
+        padding: 1.2rem 1.5rem;
+        align-items: center;
+        justify-content: flex-start;
+        display: flex;
+        flex-direction: column;
       }
 
       .slide-panel.active {
-        min-height: 380px;
+        min-height: auto;
+        height: auto;
+        padding: 1.8rem 1.2rem;
+        align-items: stretch;
       }
 
       .slide-label {
-        bottom: auto;
-        top: 50%;
-        left: 2rem;
-        transform: translateY(-50%);
+        writing-mode: horizontal-tb;
+        transform: none;
+        max-height: none;
+        position: static;
+        white-space: normal;
+        width: 100%;
+        text-align: left;
+        justify-content: flex-start;
+      }
+
+      .slide-title-vert {
+        font-size: 1rem;
+        font-weight: 400;
+        letter-spacing: 2px;
       }
 
       .slide-content {
-        padding: 2rem;
+        position: relative;
+        top: auto;
+        left: auto;
+        width: 100%;
+        height: auto;
+        padding: 0;
+        transform: none;
+        display: none;
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .slide-panel.active .slide-content {
+        display: flex;
+        transform: none;
+      }
+
+      .slide-content img {
+        width: 100% !important;
+        max-width: 100%;
+        height: auto;
+        margin-bottom: 1rem;
+        display: block;
       }
     }
+
+    /* Estilo general para botones en laboratorios */
+.lab-card .btn-ver-mas,
+.btn-ver-mas {
+  display: inline-block;
+  margin-top: 1rem;
+  padding: 0.6rem 1.2rem;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  background: transparent;
+  color: #ffffff;
+  text-decoration: none;
+  text-transform: uppercase;
+  font-size: 0.8rem;
+  letter-spacing: 1px;
+  transition: all 0.3s ease;
+}
+
+.lab-card .btn-ver-mas:hover,
+.btn-ver-mas:hover {
+  background: #ffffff;
+  color: #000000;
+}
+
   </style>
 </head>
 <body>
@@ -840,14 +922,14 @@
       <div class="bio-split">
         <div class="bio-text">
           <p>
-            Creador e investigador enfocado en los cruces entre literatura digital, medios electrónicos, corporalidades y narrativas transmedia. Mi trabajo explora la reconfiguración del texto y de la voz a través del código informático, interfaces interactivas y entornos sonoros inmersivos.
+            Creador e investigador enfocado en los cruces entre literatura, arte electrónico-digital, corporalidades y experiencias transmedia. Su trabajo explora la reconfiguración del texto, de la voz y su lectura, a través del código informático, interfaces interactivas, entornos sonoros y audiovisuales inmersivos.
           </p>
           <div class="more-bio-text" id="moreBio">
             <p>
-              A lo largo de mi trayectoria he desarrollado proyectos de divulgación, impartido laboratorios creativos y coordinado iniciativas de literatura expandida. Bajo el seudónimo artístico <strong>Kobra</strong>, abordo la creación desde múltiples derivas tecnológicas, poéticas y de experimentación transdisciplinar.
+              Coordinador de la <a href="https://plataformaplaca.com/" target="_blank">Plataforma PLACA</a> en México, gestiona eventos culturales como el Recital de Poesía Chilango Andaluz. Es autor de proyectos transmediales como <a href="#" target="_blank">Own Dream Code</a> (Editorial Ultramarina C&D 2020), <a href="https://www.centroculturadigital.mx/descargable/dios-un-pixel" target="_blank">dios un píxel</a> (Centro de Cultura Digital, 2022), <a href="https://cyberbardx.brokenenglish.lol/" target="_blank">Cyber_BardX</a> (Catedra Max Aub/Broken English, 2023), Sueños de Luciérnagas (Dogma, 2025), <a href="https://centroculturadigital.mx/revista/homo-transmedialis" target="_blank">Homo transmedialis</a> (Centro de Cultura Digital, 2025-2026). Los álbumes de poesía sonora <a href="https://open.spotify.com/intl-es/album/7A5rdWz901x3aXjKVHLwd5" target="_blank">Somos magia</a> y <a href="https://open.spotify.com/intl-es/album/3iZr4Q735c3mPQQvSQhPER" target="_blank">redDark</a> (2024). 
             </p>
             <p>
-              Mi práctica profundiza en la materialidad del archivo digital, los lenguajes emergentes y las poéticas de la interactividad, buscando desdibujar las fronteras entre la lectura tradicional y la experiencia inmersiva.
+              Es editor en México de la Editorial Ultramarina C&D. Sus piezas audiovisuales han recibido diversas distinciones y forman parte de selecciones oficiales de festivales internacionales de videopoesía y cine experimental. <br>Trabaja desde hace 20 años en proyectos de poesía transmedia/expandida.
             </p>
           </div>
           <button class="btn-more" id="toggleBioBtn">Ver más</button>
@@ -869,13 +951,13 @@
           <!-- Noticia 1 -->
           <div class="featured-card active">
             <div class="featured-img-block">
-              <img src="img/posverso_bienal.jpg" alt="POSVERSO Bienal Argentina" onerror="this.style.display='none'; this.parentNode.style.background='rgba(30,30,30,0.8)';">
+              <img src="img/Posverso26.jpg" alt="POSVERSO Bienal Argentina" onerror="this.style.display='none'; this.parentNode.style.background='rgba(30,30,30,0.8)';">
             </div>
             <div class="featured-info">
               <span class="featured-tag">Participación Internacional</span>
-              <h3>POSVERSO — Bienal de Poesía Experimental</h3>
+              <h3>POSVERSO — Bienal, poesía electrónica</h3>
               <p>
-                Exposición y presentación de obra en la Bienal Internacional POSVERSO en Argentina, explorando las derivas de la poesía electrónica, la interacción textual y la materialidad del código en las artes contemporáneas.
+                Exposición y presentación de la obra Cyber_bardX de Carlos Ramírez Kobra en POSVERSO Bienal en Argentina, bajo la curaduría de Claudia Kozak de Poesía digital Pasados/Presentes, del encantamiento al horror, al lado de piezas de diferentes artistas de latinoamérica.
               </p>
               <a href="#" target="_blank" class="btn-more">Conocer más de la pieza</a>
             </div>
@@ -884,30 +966,30 @@
           <!-- Noticia 2 -->
           <div class="featured-card">
             <div class="featured-img-block">
-              <img src="img/symbolic_homes_pres.jpg" alt="Presentación Symbolic Homes" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+              <img src="img/Flyer_SH_26_Sept.png" alt="Presentación Symbolic Homes" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
               <i class="fa-solid fa-laptop-code featured-img-placeholder" style="display:none;"></i>
             </div>
             <div class="featured-info">
               <span class="featured-tag">Presentación Online</span>
-              <h3>Symbolic Homes — Transmisión en Vivo</h3>
+              <h3>Symbolic Homes — Presentación online</h3>
               <p>
-                Presentación online de Symbolic Homes vía transmisión remota. Contará con la participación activa de lxs autorxs y las intervenciones especiales de Martín Rangel, Vinicius Marquet e Iván Vergara como presentadorxs.
+                Presentación online de Symbolic Homes por Facebook Live en la cuneta de la Plataforma PLACA. Contará con la participación activa de lxs autorxs y las intervenciones especiales de Martín Rangel, Vinicius Marquet e Iván Vergara como presentadorxs.
               </p>
-              <a href="#" target="_blank" class="btn-more">Unirse al Evento</a>
+              <a href="https://www.facebook.com/plataformaplaca" target="_blank" class="btn-more">Unirse al Evento</a>
             </div>
           </div>
 
           <!-- Noticia 3 -->
           <div class="featured-card">
             <div class="featured-img-block">
-              <img src="img/noticia_ejemplo.jpg" alt="Noticia de Ejemplo" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+              <img src="img/LitDigCirculacion.png" alt="Noticia de Ejemplo" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
               <i class="fa-regular fa-newspaper featured-img-placeholder" style="display:none;"></i>
             </div>
             <div class="featured-info">
-              <span class="featured-tag">Novedad</span>
-              <h3>Noticia / Lanzamiento de Ejemplo</h3>
+              <span class="featured-tag">Jornadas de Estudio</span>
+              <h3>Literaturas digitales en circulación</h3>
               <p>
-                Este espacio está reservado para próximas noticias, publicaciones destacadas o nuevos lanzamientos del proyecto. Puedes actualizar este contenido en cualquier momento.
+                Participación en las Jornadas de estudio, Literaturas digitales en circulación con la presentación del Volumen 2 de la Antología LitElat y en la Mesa 5 con la ponencia "El homo-transmedialis. Literatura expandida, hibridación de códigos, nodos en red y modos de subjetivación contemporánea".
               </p>
               <a href="#" class="btn-more">Más Información</a>
             </div>
@@ -920,6 +1002,11 @@
           <div class="featured-dot active" data-slide="0"></div>
           <div class="featured-dot" data-slide="1"></div>
           <div class="featured-dot" data-slide="2"></div>
+        </div>
+
+        <!-- Botón para ver más noticias -->
+        <div class="more-news-btn-container">
+          <a href="#" class="btn-more">Ver más noticias</a>
         </div>
 
       </div>
@@ -993,9 +1080,10 @@
             <span class="slide-title-vert">Cyber_bardX</span>
           </div>
           <div class="slide-content">
+            <span class="panel-num"><img src="img/Cyber_BardX.png" width="50%" /></span>
             <span class="panel-num">LITERATURA ELECTRÓNICA</span>
             <h3>Cyber_bardX</h3>
-            <p>Basado en el .</p>
+            <p>"Cyber_BardX" es una obra que introduce el concepto de una entidad virtual como colaboradora en el proceso creativo, explorando la relación simbiótica entre lo humano y lo no humano.</p>
             <div><a href="#" class="btn-more">Ver Proyecto</a></div>
           </div>
         </div>
@@ -1019,6 +1107,7 @@
             <span class="slide-title-vert">Colaboraciones</span>
           </div>
           <div class="slide-content">
+            <span class="panel-num"><img src="img/Litelat.png" width="50%" /></span>
             <span class="panel-num">LITERATURA TRANSMEDIA</span>
             <h3>ANTOLOGÍAS</h3>
             <p>Participación como colaborador en la Antología LitElat Vol 2, como autor en la Antologíade Poesía Visual SIGNO/Territorio, en POSVERSO Bienal 2026, entre otros proyectos</p>
@@ -1077,10 +1166,14 @@
         <div class="lab-card">
           <h3>Laboratorio No Books</h3>
           <p>Espacio pedagógico de experimentación dedicado a las escrituras transmediales-digitales, desarticulando el soporte libro tradicional hacia el código y la interactividad.</p>
+
+          <a href="#" class="btn-ver-mas">VER MÁS</a>
         </div>
         <div class="lab-card">
           <h3>Taller Líquido Vivido</h3>
           <p>Taller intensivo centrado en las derivas del cine experimental y la videopoesía, explorando la corporalidad, la imagen fluida y la voz.</p>
+
+          <a href="#" class="btn-ver-mas">VER MÁS</a>
         </div>
       </div>
     </div>
@@ -1125,10 +1218,10 @@
           <div>
             <h3 style="font-size: 1rem; color: #aaa; margin-bottom: 0.8rem; text-transform: uppercase; letter-spacing: 1px;">Redes Sociales</h3>
             <ul class="social-list">
-              <li><a href="https://instagram.com" target="_blank"><i class="fa-brands fa-instagram"></i> Instagram</a></li>
-              <li><a href="https://facebook.com" target="_blank"><i class="fa-brands fa-facebook"></i> Facebook</a></li>
-              <li><a href="https://youtube.com" target="_blank"><i class="fa-brands fa-youtube"></i> YouTube</a></li>
-              <li><a href="https://tiktok.com" target="_blank"><i class="fa-brands fa-tiktok"></i> TikTok</a></li>
+              <li><a href="https://www.instagram.com/kobrakonk/" target="_blank"><i class="fa-brands fa-instagram"></i> Instagram</a></li>
+              <li><a href="https://www.facebook.com/CarlosRamirezKobra" target="_blank"><i class="fa-brands fa-facebook"></i> Facebook</a></li>
+              <li><a href="https://www.youtube.com/@CarlosRamirezKobra" target="_blank"><i class="fa-brands fa-youtube"></i> YouTube</a></li>
+              <li><a href="https://www.tiktok.com/@kobrakonk" target="_blank"><i class="fa-brands fa-tiktok"></i> TikTok</a></li>
             </ul>
           </div>
           <div style="border-top: 1px solid rgba(255,255,255,0.1); padding-top: 1rem;">
@@ -1170,21 +1263,43 @@
       });
     });
 
-    /* 2.1 Slider Sección Destacado (Fade In / Fade Out con Bullets) */
+    /* 2.1 Slider Sección Destacado (Fade In / Fade Out con Bullets y Cambio Automático) */
     const featuredCards = document.querySelectorAll('.featured-card');
     const featuredDots = document.querySelectorAll('.featured-dot');
+    let currentSlide = 0;
+    let autoSlideInterval;
+
+    function goToSlide(index) {
+      currentSlide = index;
+      featuredCards.forEach(card => card.classList.remove('active'));
+      featuredDots.forEach(d => d.classList.remove('active'));
+
+      featuredCards[currentSlide].classList.add('active');
+      featuredDots[currentSlide].classList.add('active');
+    }
+
+    function startAutoSlide() {
+      autoSlideInterval = setInterval(() => {
+        currentSlide = (currentSlide + 1) % featuredCards.length;
+        goToSlide(currentSlide);
+      }, 6000); // Cambia cada 6 segundos
+    }
+
+    function resetAutoSlide() {
+      clearInterval(autoSlideInterval);
+      startAutoSlide();
+    }
 
     featuredDots.forEach(dot => {
       dot.addEventListener('click', () => {
         const slideIndex = parseInt(dot.getAttribute('data-slide'));
-
-        featuredCards.forEach(card => card.classList.remove('active'));
-        featuredDots.forEach(d => d.classList.remove('active'));
-
-        featuredCards[slideIndex].classList.add('active');
-        dot.classList.add('active');
+        goToSlide(slideIndex);
+        resetAutoSlide();
       });
     });
+
+    // Iniciar temporizador automático
+    startAutoSlide();
 
     /* 3. Canvas Cobra Hero Background */
     const canvas = document.getElementById('cobra-canvas');
