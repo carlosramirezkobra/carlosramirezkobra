@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Línea de Tiempo de Proyectos — Carlos Ramírez Kobra</title>
+  <style>
+    /* Reset & Base Styles */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      width: 100%;
+      min-height: 100vh;
+      background-color: #000000;
+      color: #e0e0e0;
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* Background Canvas Effect */
+    #bg-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* Fixed Navigation Bar */
+    .navbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.2rem 3.5rem;
+      background: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      z-index: 100;
+    }
+
+    .navbar .logo {
+      font-size: 0.95rem;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      font-weight: 500;
+      color: #ffffff;
+      text-decoration: none;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 1.8rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      color: #aaaaaa;
+      text-decoration: none;
+      font-size: 0.8rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      transition: color 0.3s ease;
+    }
+
+    .nav-links a:hover,
+    .nav-links a.active {
+      color: #ffffff;
+    }
+
+    /* Hamburger Menu Button */
+    .hamburger-btn {
+      display: none;
+      background: none;
+      border: none;
+      color: #ffffff;
+      font-size: 1.8rem;
+      cursor: pointer;
+      outline: none;
+    }
+
+    /* Main Container */
+    main {
+      position: relative;
+      z-index: 2;
+      padding: 8rem 0 5rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+    }
+
+    .content-container {
+      width: 85%;
+      max-width: 1100px;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 6px;
+      padding: 3rem 2.5rem;
+      margin: 0 auto;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+    }
+
+    .page-header {
+      border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+      padding-bottom: 1.5rem;
+      margin-bottom: 3rem;
+    }
+
+    .page-title {
+      font-size: 2.5rem;
+      font-weight: 300;
+      letter-spacing: 4px;
+      color: #ffffff;
+      text-transform: uppercase;
+      margin-bottom: 0.5rem;
+    }
+
+    .page-subtitle {
+      font-size: 0.85rem;
+      letter-spacing: 2px;
+      color: #888888;
+      text-transform: uppercase;
+    }
+
+    /* ----------------------------------------------------
+       ESTILOS DE LA LÍNEA DE TIEMPO (TIMELINE)
+    ---------------------------------------------------- */
+    .timeline-wrapper {
+      position: relative;
+      padding-left: 90px; /* Espacio para el eje en escritorio */
+    }
+
+    /* Línea vertical continua que atraviesa toda la cronología */
+    .timeline-line {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 45px; /* Alineada al centro de los círculos en desktop */
+      width: 2px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0.1) 100%);
+      z-index: 1;
+    }
+
+    .year-group {
+      position: relative;
+      margin-bottom: 3.5rem;
+    }
+
+    .year-group:last-child {
+      margin-bottom: 0;
+    }
+
+    /* Círculo con el Año */
+    .year-node {
+      position: absolute;
+      left: -90px;
+      top: 0;
+      width: 90px;
+      height: 90px;
+      border-radius: 50%;
+      background: #000000;
+      border: 2px solid rgba(255, 255, 255, 0.4);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 2;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.8), 0 0 10px rgba(255, 255, 255, 0.05);
+      transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), border-color 0.4s ease, box-shadow 0.4s ease;
+      cursor: pointer;
+    }
+
+    .year-node:hover {
+      transform: scale(1.15);
+      border-color: #ffffff;
+      box-shadow: 0 0 20px rgba(255, 255, 255, 0.25);
+    }
+
+    .year-text {
+      font-size: 1.15rem;
+      font-weight: 400;
+      letter-spacing: 2px;
+      color: #ffffff;
+    }
+
+    /* Lista de Proyectos pertenecientes al mismo año */
+    .year-projects {
+      display: flex;
+      flex-direction: column;
+      gap: 1.8rem;
+      padding-top: 0.5rem;
+    }
+
+    /* Tarjeta de Proyecto */
+    .project-card {
+      display: flex;
+      gap: 2rem;
+      background: rgba(15, 15, 15, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 4px;
+      padding: 1.5rem;
+      position: relative;
+      z-index: 2;
+      transition: border-color 0.3s ease, transform 0.3s ease;
+    }
+
+    .project-card:hover {
+      border-color: rgba(255, 255, 255, 0.3);
+      transform: translateY(-2px);
+    }
+
+    .project-image {
+      flex: 0 0 260px;
+      height: 170px;
+      border-radius: 3px;
+      overflow: hidden;
+      background: #111;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      align-self: center;
+    }
+
+    .project-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: grayscale(40%);
+      transition: filter 0.3s ease;
+    }
+
+    .project-card:hover .project-image img {
+      filter: grayscale(0%);
+    }
+
+    .project-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .project-meta {
+      font-size: 0.75rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: #888888;
+      margin-bottom: 0.5rem;
+    }
+
+    .project-title {
+      font-size: 1.35rem;
+      font-weight: 300;
+      color: #ffffff;
+      margin-bottom: 0.8rem;
+      letter-spacing: 1px;
+      word-break: break-word;
+    }
+
+    .project-excerpt {
+      font-size: 0.95rem;
+      line-height: 1.6;
+      color: #bbbbbb;
+      font-weight: 300;
+      margin-bottom: 1.2rem;
+    }
+
+    .btn-read-more {
+      align-self: flex-start;
+      display: inline-block;
+      padding: 0.6rem 1.2rem;
+      background: transparent;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      color: #ffffff;
+      text-decoration: none;
+      font-size: 0.75rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      transition: all 0.3s ease;
+    }
+
+    .btn-read-more:hover {
+      background: #ffffff;
+      color: #000000;
+    }
+
+    /* Paginador */
+    .pagination-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 0.5rem;
+      margin-top: 3.5rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .page-btn {
+      background: transparent;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: #aaaaaa;
+      padding: 0.5rem 0.9rem;
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .page-btn:hover,
+    .page-btn.active {
+      border-color: #ffffff;
+      color: #ffffff;
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .page-btn:disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+      border-color: rgba(255, 255, 255, 0.1);
+    }
+
+    /* Footer */
+    footer {
+      position: relative;
+      z-index: 2;
+      text-align: center;
+      padding: 2.5rem;
+      font-size: 0.85rem;
+      color: #666666;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+      background: #000000;
+    }
+
+    /* ----------------------------------------------------
+       ADAPTABILIDAD MÓVIL (RESPONSIVE)
+    ---------------------------------------------------- */
+    @media (max-width: 992px) {
+      .navbar { padding: 1.2rem 1.8rem; }
+      .hamburger-btn { display: block; }
+
+      .nav-links {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        width: 100%;
+        background: rgba(5, 5, 5, 0.96);
+        backdrop-filter: blur(15px);
+        flex-direction: column;
+        align-items: center;
+        gap: 1.5rem;
+        padding: 2rem 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        display: none;
+      }
+
+      .nav-links.mobile-active {
+        display: flex;
+      }
+
+      .content-container {
+        width: 92%;
+        padding: 2rem 1.2rem;
+      }
+
+      /* Ajuste de Línea de Tiempo Centrada en Móvil */
+      .timeline-wrapper {
+        padding-left: 0;
+      }
+
+      /* La línea vertical pasa por el CENTRO EXACTO de la pantalla */
+      .timeline-line {
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 1;
+      }
+
+      .year-group {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding-top: 5rem; /* Espacio para ubicar el círculo centrado arriba */
+        margin-bottom: 3rem;
+      }
+
+      /* Círculo con el año centrado horizontalmente */
+      .year-node {
+        left: 50%;
+        top: 0;
+        transform: translateX(-50%);
+        width: 75px;
+        height: 75px;
+        z-index: 3;
+      }
+
+      .year-node:hover {
+        transform: translateX(-50%) scale(1.1);
+      }
+
+      .year-text {
+        font-size: 1rem;
+      }
+
+      .year-projects {
+        width: 100%;
+      }
+
+      .project-card {
+        flex-direction: column;
+        gap: 1.2rem;
+        padding: 1.2rem;
+        background: rgba(12, 12, 12, 0.92);
+        backdrop-filter: blur(8px);
+      }
+
+      .project-image {
+        width: 100%;
+        flex: none;
+        height: 190px;
+      }
+
+      .project-title {
+        font-size: 1.2rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Canvas Background for Scroll Effect -->
+  <canvas id="bg-canvas"></canvas>
+
+  <!-- Top Navigation Bar -->
+  <nav class="navbar">
+    <a href="index.html#hero" class="logo">Carlos Ramírez Kobra</a>
+    <button class="hamburger-btn" id="hamburgerBtn" aria-label="Menú">☰</button>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="index.html#hero">Inicio</a></li>
+      <li><a href="index.html#semblanza">Semblanza</a></li>
+      <li><a href="index.html#proyectos">Proyectos</a></li>
+      <li><a href="index.html#cine">Cine & Videopoesía</a></li>
+      <li><a href="index.html#laboratorios">Laboratorios</a></li>
+      <li><a href="noticias.html">Noticias</a></li>
+      <li><a href="index.html#contacto">Contacto</a></li>
+    </ul>
+  </nav>
+
+  <!-- Main Content Area -->
+  <main>
+    <section class="content-container">
+      
+      <header class="page-header">
+        <h1 class="page-title">Cronología de Proyectos</h1>
+        <p class="page-subtitle">Desarrollo web, literatura digital y gestión cultural</p>
+      </header>
+
+      <!-- Contenedor general de la línea de tiempo -->
+      <div class="timeline-wrapper">
+        <div class="timeline-line"></div>
+        <div id="timelineContainer"></div>
+      </div>
+
+      <!-- Paginador dinámico -->
+      <div class="pagination-container" id="pagination"></div>
+
+    </section>
+  </main>
+
+  <footer>
+    <p>&copy; Carlos Ramírez (Kobra). Alojado en GitHub Pages.</p>
+  </footer>
+
+  <!-- JavaScript Logic -->
+  <script>
+    /* 1. Arreglo de Proyectos */
+    const projectsData = [
+      {
+        id: "proj-1",
+        year: "2026",
+        categoria: "Videojuego & Web Interactiva",
+        titulo: "Symbolic Homes",
+        resumen: "Proyecto de arte digital interactivo, un videojuego con narrativa hypertextual.  reflexiona sobre cómo los individuos contemporáneos construyen, habitan, recuerdan y abandonan sus espacios domésticos, transformando la pantalla en una ventana de resistencia visual y discursiva que interroga directamente las condiciones materiales e imaginarias de nuestra existencia actual.",
+        imagen: "img/SymbolicHomes.png",
+        link: "proyectos/symbolic-homes.html"
+      },
+      {
+        id: "proj-2",
+        year: "2025",
+        categoria: "Poesía Sonora",
+        titulo: "redDark",
+        resumen: "Album de poesía sonora, experimentación sonora que compila diversos trabajos y colaboraciones con diferentes artistas y escritorxs",
+        imagen: "img/audiovisual/redDark.png",
+        link: "#"
+      },
+      {
+        id: "proj-3",
+        year: "2025",
+        categoria: "Poemario",
+        titulo: "Sueños de Luciernagas",
+        resumen: "Poemario escrito a cuatro manos en colaboración con Alejandra Olson, publicado por Dogma Editorial. Un poemario que oscila en preguntas universales y la construcción de sentido del propio universo a través de los sueños",
+        imagen: "img/domicilios_digitales.jpg",
+        link: "#"
+      },
+      {
+        id: "proj-4",
+        year: "2025",
+        categoria: "Hip hop - Poesía",
+        titulo: "Somos Magia",
+        resumen: "Albúm de poesía sonora y hip hop con colaboraciones con RVNGEL, Kzpr de Oro, Marcos de la Fuente, Lilith de Luna. Crea un dialogo entre la poesía y el Hip-hop",
+        imagen: "img/festival_andaluz.jpg",
+        link: "#"
+      }
+    ];
+
+    /* 2. Lógica de Agrupamiento y Renderizado (Orden Inverso) */
+    const ITEMS_PER_PAGE = 10;
+    let currentPage = 1;
+
+    function renderTimeline(page) {
+      const container = document.getElementById('timelineContainer');
+      container.innerHTML = '';
+
+      const startIndex = (page - 1) * ITEMS_PER_PAGE;
+      const endIndex = startIndex + ITEMS_PER_PAGE;
+      const pageItems = projectsData.slice(startIndex, endIndex);
+
+      if (pageItems.length === 0) {
+        container.innerHTML = '<p style="color:#888;">No hay proyectos para mostrar aún.</p>';
+        return;
+      }
+
+      // Agrupar proyectos por año
+      const groupedByYear = pageItems.reduce((acc, item) => {
+        if (!acc[item.year]) {
+          acc[item.year] = [];
+        }
+        acc[item.year].push(item);
+        return acc;
+      }, {});
+
+      // Ordenar los años de MAYOR a MENOR (2026 -> retroceso)
+      const sortedYears = Object.keys(groupedByYear).sort((a, b) => b - a);
+
+      // Construir la estructura DOM en orden descendente
+      sortedYears.forEach(year => {
+        const yearGroup = document.createElement('div');
+        yearGroup.className = 'year-group';
+
+        // Nodo circular con el año
+        const yearNode = document.createElement('div');
+        yearNode.className = 'year-node';
+        yearNode.innerHTML = `<span class="year-text">${year}</span>`;
+        yearGroup.appendChild(yearNode);
+
+        // Contenedor para las tarjetas del año actual
+        const projectsList = document.createElement('div');
+        projectsList.className = 'year-projects';
+
+        groupedByYear[year].forEach(item => {
+          const card = document.createElement('article');
+          card.className = 'project-card';
+          card.innerHTML = `
+            <div class="project-image">
+              <img src="${item.imagen}" alt="${item.titulo}" onerror="this.parentNode.style.background='#222'; this.style.display='none';">
+            </div>
+            <div class="project-content">
+              <div>
+                <div class="project-meta">${item.categoria}</div>
+                <h2 class="project-title">${item.titulo}</h2>
+                <p class="project-excerpt">${item.resumen}</p>
+              </div>
+              <a href="${item.link}" class="btn-read-more">Ver Proyecto →</a>
+            </div>
+          `;
+          projectsList.appendChild(card);
+        });
+
+        yearGroup.appendChild(projectsList);
+        container.appendChild(yearGroup);
+      });
+
+      renderPagination();
+    }
+
+    /* 3. Lógica de Paginador */
+    function renderPagination() {
+      const paginationContainer = document.getElementById('pagination');
+      paginationContainer.innerHTML = '';
+
+      const totalPages = Math.ceil(projectsData.length / ITEMS_PER_PAGE);
+
+      if (totalPages <= 1) return;
+
+      const prevBtn = document.createElement('button');
+      prevBtn.className = 'page-btn';
+      prevBtn.textContent = '← Anterior';
+      prevBtn.disabled = currentPage === 1;
+      prevBtn.addEventListener('click', () => {
+        if (currentPage > 1) {
+          currentPage--;
+          renderTimeline(currentPage);
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+      });
+      paginationContainer.appendChild(prevBtn);
+
+      for (let i = 1; i <= totalPages; i++) {
+        const pageBtn = document.createElement('button');
+        pageBtn.className = `page-btn ${i === currentPage ? 'active' : ''}`;
+        pageBtn.textContent = i;
+        pageBtn.addEventListener('click', () => {
+          currentPage = i;
+          renderTimeline(currentPage);
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+        paginationContainer.appendChild(pageBtn);
+      }
+
+      const nextBtn = document.createElement('button');
+      nextBtn.className = 'page-btn';
+      nextBtn.textContent = 'Siguiente →';
+      nextBtn.disabled = currentPage === totalPages;
+      nextBtn.addEventListener('click', () => {
+        if (currentPage < totalPages) {
+          currentPage++;
+          renderTimeline(currentPage);
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+      });
+      paginationContainer.appendChild(nextBtn);
+    }
+
+    renderTimeline(currentPage);
+
+    /* 4. Menú Hamburguesa Móvil */
+    const hamburgerBtn = document.getElementById('hamburgerBtn');
+    const navLinks = document.getElementById('navLinks');
+
+    hamburgerBtn.addEventListener('click', () => {
+      navLinks.classList.toggle('mobile-active');
+    });
+
+    /* 5. Canvas Effect con 'cuerpos_obra.jpg' */
+    const bgCanvas = document.getElementById('bg-canvas');
+    const bgCtx = bgCanvas.getContext('2d');
+    let bgWidth = bgCanvas.width = window.innerWidth;
+    let bgHeight = bgCanvas.height = window.innerHeight;
+
+    window.addEventListener('resize', () => {
+      bgWidth = bgCanvas.width = window.innerWidth;
+      bgHeight = bgCanvas.height = window.innerHeight;
+    });
+
+    const imgCuerpos = new Image();
+    imgCuerpos.src = 'img/cuerpos_obra.jpg';
+
+    function renderBgCanvas() {
+      bgCtx.clearRect(0, 0, bgWidth, bgHeight);
+
+      const scrollTop = window.scrollY || document.documentElement.scrollTop;
+      const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+      const scrollProgress = maxScroll > 0 ? Math.min(1, Math.max(0, scrollTop / maxScroll)) : 0;
+
+      if (imgCuerpos.complete && imgCuerpos.naturalWidth > 0) {
+        bgCtx.save();
+        
+        const alpha = 0.2 + (scrollProgress * 0.25);
+        const scale = 0.35 + (scrollProgress * 0.15);
+
+        bgCtx.globalAlpha = alpha;
+        
+        const drawW = bgWidth * scale;
+        const drawH = drawW * (imgCuerpos.naturalHeight / imgCuerpos.naturalWidth);
+        
+        bgCtx.drawImage(imgCuerpos, (bgWidth - drawW) / 2, (bgHeight - drawH) / 2, drawW, drawH);
+        bgCtx.restore();
+      }
+
+      requestAnimationFrame(renderBgCanvas);
+    }
+
+    renderBgCanvas();
+  </script>
+</body>
+</html>
