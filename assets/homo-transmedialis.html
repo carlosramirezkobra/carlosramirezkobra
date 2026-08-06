@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Symbolic Homes — Carlos Ramírez (Kobra)</title>
+  <style>
+    /* Reset & Base Styles */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      width: 100%;
+      min-height: 100vh;
+      background-color: #000000;
+      color: #e0e0e0;
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* Background Canvas */
+    #bg-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      padding-top: 15vh;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* Fixed Top Navigation Bar */
+    .navbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.2rem 3.5rem;
+      background: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      z-index: 100;
+    }
+
+    .navbar .logo {
+      font-size: 0.95rem;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      font-weight: 500;
+      color: #ffffff;
+      text-decoration: none;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 1.8rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      color: #aaaaaa;
+      text-decoration: none;
+      font-size: 0.8rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      transition: color 0.3s ease;
+    }
+
+    .nav-links a:hover {
+      color: #ffffff;
+    }
+
+    /* Hamburger Menu Button */
+    .hamburger-btn {
+      display: none;
+      background: none;
+      border: none;
+      color: #ffffff;
+      font-size: 1.8rem;
+      cursor: pointer;
+      outline: none;
+    }
+
+    /* Main Content Wrapper */
+    main {
+      position: relative;
+      z-index: 2;
+      padding: 7rem 0 5rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+    }
+
+    /* Main Container (85% Width with Dark Transparency) */
+    .content-container {
+      width: 85%;
+      max-width: 1200px;
+      background: rgba(0, 0, 0, 0.82);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 6px;
+      padding: 2.5rem;
+      margin: 0 auto;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+      opacity: 70%;
+    }
+
+    /* Horizontal Banner (Proportions ~ 1200x250 px) */
+    .project-banner {
+      width: 100%;
+      height: 250px;
+      border-radius: 4px;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      margin-bottom: 2.5rem;
+      position: relative;
+      background: rgba(20, 20, 20, 0.8);
+    }
+
+    .project-banner img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: grayscale(40%) contrast(105%);
+      transition: filter 0.5s ease;
+    }
+
+    .project-banner:hover img {
+      filter: grayscale(0%) contrast(100%);
+    }
+
+    /* Content Typography & Structure */
+    .project-header {
+      border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+      padding-bottom: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .project-category {
+      font-size: 0.8rem;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: #888888;
+      margin-bottom: 0.5rem;
+      display: block;
+    }
+
+    .project-title {
+      font-size: 2.8rem;
+      font-weight: 300;
+      letter-spacing: 4px;
+      color: #ffffff;
+      text-transform: uppercase;
+      margin-bottom: 0.8rem;
+    }
+
+    .project-meta {
+      display: flex;
+      gap: 2rem;
+      font-size: 0.85rem;
+      color: #aaaaaa;
+      letter-spacing: 1px;
+    }
+
+    .project-body {
+      line-height: 1.9;
+      color: #cccccc;
+      font-size: 1.05rem;
+      font-weight: 300;
+    }
+
+    .project-body p {
+      margin-bottom: 1.5rem;
+    }
+
+    .project-body h3 {
+      font-size: 1.4rem;
+      color: #ffffff;
+      font-weight: 400;
+      letter-spacing: 2px;
+      margin: 2.5rem 0 1rem;
+      text-transform: uppercase;
+      border-left: 2px solid #ffffff;
+      padding-left: 0.8rem;
+    }
+
+    /* Actions / Buttons */
+    .btn-back {
+      display: inline-block;
+      margin-top: 2rem;
+      padding: 0.8rem 1.8rem;
+      background: transparent;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      color: #ffffff;
+      text-decoration: none;
+      font-size: 0.85rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      transition: all 0.3s ease;
+    }
+
+    .btn-back:hover {
+      background: #ffffff;
+      color: #000000;
+      border-color: #ffffff;
+    }
+
+    /* Footer */
+    footer {
+      position: relative;
+      z-index: 2;
+      text-align: center;
+      padding: 2.5rem;
+      font-size: 0.85rem;
+      color: #666666;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+      background: #000000;
+    }
+
+    /* Responsivo */
+    @media (max-width: 992px) {
+      .navbar { padding: 1.2rem 1.8rem; }
+      .hamburger-btn { display: block; }
+
+      .nav-links {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        width: 100%;
+        background: rgba(5, 5, 5, 0.96);
+        backdrop-filter: blur(15px);
+        flex-direction: column;
+        align-items: center;
+        gap: 1.5rem;
+        padding: 2rem 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        display: none;
+      }
+
+      .nav-links.mobile-active {
+        display: flex;
+      }
+
+      .content-container {
+        width: 92%;
+        padding: 1.5rem;
+      }
+
+      .project-banner {
+        height: 180px;
+      }
+
+      .project-title {
+        font-size: 2rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Canvas Background for Scroll Down Effect -->
+  <canvas id="bg-canvas"></canvas>
+
+  <!-- Top Navigation Bar (Rutas apuntando al index raíz) -->
+  <nav class="navbar">
+    <a href="../index.html#hero" class="logo">Carlos Ramírez Kobra</a>
+    <button class="hamburger-btn" id="hamburgerBtn" aria-label="Menú">☰</button>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="../index.html#hero">Inicio</a></li>
+      <li><a href="../index.html#semblanza">Semblanza</a></li>
+      <li><a href="../index.html#proyectos">Proyectos</a></li>
+      <li><a href="../index.html#cine">Cine & Videopoesía</a></li>
+      <li><a href="../index.html#laboratorios">Laboratorios</a></li>
+      <li><a href="../index.html#contacto">Contacto</a></li>
+    </ul>
+  </nav>
+
+  <!-- Main Content Area -->
+  <main>
+    <article class="content-container">
+      
+      <!-- Banner Horizontal (1200 x 250 px proporcional) -->
+      <div class="project-banner">
+        <img src="img/homotransmedialis.png" alt="Symbolic Homes Banner" onerror="this.style.display='none'; this.parentNode.style.background='rgba(30,30,30,0.8)';">
+      </div>
+
+      <!-- Header del Proyecto -->
+      <header class="project-header">
+        <span class="project-category">Investigación</span>
+        <h1 class="project-title">Homo transmedialis</h1>
+        <div class="project-meta">
+          <span>Año: 2025–2026</span>
+          <span>Investigación en entregas</span>
+        </div>
+      </header>
+
+      <!-- Cuerpo del Texto / Información del Proyecto -->
+      <section class="project-body">
+
+        <h3>Escrituras transmediales y literatura electrónica/digital</h3>
+        <p>
+          <strong>Homo transmedialis</strong> es un proyecto de investigación en torno a la interrogante ¿cómo leemos actualmente? ¿Cómo han camniado los habitos de lectura en la actualidad? ¿Leemos de forma transmedial, fragmentada e hypertextual? Un proyecto publicado en entregas por el Centro de Cultura Digital desde 2025.
+        </p>
+
+        <p>
+          A través de una interfaz que remite a la estética retro-digital, el minimalismo cromático y el código de terminales arqueológicas, la pieza sitúa al usuario ante un tablero virtual interactivo que conecta nueve mundos simbólicos. El acto lúdico de explorar laberintos bidimensionales o emparejar fragmentos visuales en un sistema de memoria (memorama) no funciona aquí como un mero entretenimiento, sino como un proceso de excavación arqueológica y afectiva. Al colisionar o descubrir los componentes del juego, la interfaz revela fragmentos narrativos y textuales densos y poéticos, donde se abordan problemáticas críticas: la precarización de la vivienda, las violencias territoriales basadas en el género, la alienación digital y el cuerpo humano atrapado entre realidades físicas y virtuales.
+        </p>
+
+        <h3>Cita de la Investigación</h3>
+        <p>
+          Una olla de presión en la estufa emite un siseo constante: estamos ante una metáfora crítica del presente. Ese silbido anuncia la ebullición de lo transmedia, una noción que ha desbordado su definición inicial como forma narrativa expandida entre medios y signos —como lo formuló Carlos Scolari (2013)— para convertirse en una práctica artística, poética y literaria que no depende ya de una continuidad narrativa, sino de una inmersión conceptual distribuida en múltiples formatos. Aquí, la obra no se define por su linealidad, sino por su capacidad de hibridar códigos y medios diversos bajo un mismo arco conceptual.
+        </p>
+
+        <p>
+          Sin embargo, ¿por qué existe la literatura transmedia?, ¿a qué necesidades responde? ¿El consumo de contenido transmedia precede al concepto de literatura transmedia o nos encontramos ante el dilema del huevo y la gallina? Lo cierto es que la humanidad habita un contexto de consumo de contenido transmedia que fluye continuamente entre lo analógico y lo digital. En este entramado es que nace la figura del Homo transmedialis, un concepto que no surge en el vacío. Este ser habita un entorno mediático y digital saturado por contenidos transmedia. En esta olla a presión de hiperconectividad, la válvula ya no contiene, sino que libera nuevas formas de creación. Asistimos a un punto de ebullición donde la literatura, en diálogo con dispositivos electrónicos, redes y algoritmos, se reinventa como experiencia inmersiva y colaborativa.
+        </p>
+
+        <a href="https://centroculturadigital.mx/revista/homo-transmedialis" class="btn-back" target="_blank">Ver Primera entrega</a>
+
+        <h3>Próximas entregas</h3>
+
+        <p>
+          La segunda entrega contempla una c´ronica de el acercamiento del autor a la literatura y susu diferentes formas, acompañada de un sitio web tipo wiki que pretende ser un archivo del entorno de la literatura transmedia y digital producida en Latinoamérica, el Caribe y España.
+        </p>
+      </section>
+
+      <!-- Botón de retorno -->
+      <a href="../index.html#proyectos" class="btn-back">← Volver a Proyectos</a>
+
+    </article>
+  </main>
+
+  <footer>
+    <p>&copy; Carlos Ramírez (Kobra). Alojado en GitHub Pages.</p>
+  </footer>
+
+  <!-- JavaScript Logic -->
+  <script>
+    /* 1. Menú Hamburguesa Móvil */
+    const hamburgerBtn = document.getElementById('hamburgerBtn');
+    const navLinks = document.getElementById('navLinks');
+
+    hamburgerBtn.addEventListener('click', () => {
+      navLinks.classList.toggle('mobile-active');
+    });
+
+    /* 2. Scroll Down Effect con cuerpos_obra.jpg en Canvas Background */
+    const bgCanvas = document.getElementById('bg-canvas');
+    const bgCtx = bgCanvas.getContext('2d');
+    let bgWidth = bgCanvas.width = window.innerWidth;
+    let bgHeight = bgCanvas.height = window.innerHeight;
+
+    window.addEventListener('resize', () => {
+      bgWidth = bgCanvas.width = window.innerWidth;
+      bgHeight = bgCanvas.height = window.innerHeight;
+    });
+
+    /* Carga de la imagen de fondo */
+    const imgCuerpos = new Image();
+    imgCuerpos.src = '../img/cuerpos_obra.jpg';
+
+    function renderBgCanvas() {
+      bgCtx.clearRect(0, 0, bgWidth, bgHeight);
+
+      // Progreso del scroll en la página
+      const scrollTop = window.scrollY || document.documentElement.scrollTop;
+      const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+      const scrollProgress = maxScroll > 0 ? Math.min(1, Math.max(0, scrollTop / maxScroll)) : 0;
+
+      if (imgCuerpos.complete && imgCuerpos.naturalWidth > 0) {
+        bgCtx.save();
+        
+        // La opacidad y escala reaccionan sutilmente al desplazamiento
+        const alpha = 0.2 + (scrollProgress * 0.25);
+        const scale = 0.35 + (scrollProgress * 0.15);
+
+        bgCtx.globalAlpha = alpha;
+        
+        const drawW = bgWidth * scale;
+        const drawH = drawW * (imgCuerpos.naturalHeight / imgCuerpos.naturalWidth);
+        
+        // Centrado en el lienzo
+        bgCtx.drawImage(imgCuerpos, (bgWidth - drawW) / 2, (bgHeight - drawH) / 2, drawW, drawH);
+        bgCtx.restore();
+      }
+
+      requestAnimationFrame(renderBgCanvas);
+    }
+
+    renderBgCanvas();
+  </script>
+</body>
+</html>
